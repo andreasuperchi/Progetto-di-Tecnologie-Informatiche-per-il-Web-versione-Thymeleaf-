@@ -78,8 +78,8 @@ public class UtenteDAO {
 	
 	public List<Riunione> trovaMieRiunioni() throws SQLException {
 		
-		List<Riunione> riunioni = new ArrayList<Riunione>();
-		String query = "SELECT * FROM riunione WHERE host = ? AND (? < DATA OR (? = DATA AND ? < ORA + DURATA))";
+		List<Riunione> mieRiunioni = new ArrayList<Riunione>();
+		String query = "SELECT * FROM riunione WHERE host = ? AND (? < data OR (? = data AND ? < ora + durata))";
 		
 		SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");  
 	    Date date = new Date();
@@ -102,13 +102,52 @@ public class UtenteDAO {
 					riunione.setOra(result.getString("ora"));
 					riunione.setDurata(result.getString("durata"));
 					riunione.setNum_max_partecipanti(result.getInt("num_max_partecipanti"));
+					riunione.setHost(result.getInt("host"));
 					
-					riunioni.add(riunione);
+					mieRiunioni.add(riunione);
 				}
 			}
 		}
 		
-		return riunioni;
+		return mieRiunioni;
+	}
+	
+	public List<Riunione> trovaRiunioniACuiSonoStatoInvitato() throws SQLException {
+		
+		List<Riunione> invitoRiunioni = new ArrayList<Riunione>();
+		String query = "SELECT R.id, R.titolo, R.data, R.ora, R.durata, R.num_max_partecipanti, R.host"
+				+ "FROM partecipanti AS P JOIN riunione AS R ON P.id_riunione = R.id"
+				+ "WHERE P.id_partecipante = ? AND (? < R.data OR (? = R.data AND ? < R.ora + R.durata))";
+		
+		SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");  
+	    Date date = new Date();
+	    SimpleDateFormat formatter2 = new SimpleDateFormat("HH:mm:ss");  
+	    Date time = new Date();
+		
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setInt(1, this.id);
+			pstatement.setString(2, formatter1.format(date));
+			pstatement.setString(3, formatter1.format(date));
+			pstatement.setString(4, formatter2.format(time));
+			
+			try(ResultSet result = pstatement.executeQuery();) {
+				while(result.next()) {
+					Riunione riunione = new Riunione();
+					
+					riunione.setId(result.getInt("id"));
+					riunione.setTitolo(result.getString("titolo"));
+					riunione.setData(result.getString("data"));
+					riunione.setOra(result.getString("ora"));
+					riunione.setDurata(result.getString("durata"));
+					riunione.setNum_max_partecipanti(result.getInt("num_max_partecipanti"));
+					riunione.setHost(result.getInt("host"));
+					
+					invitoRiunioni.add(riunione);
+				}
+			}
+		}
+		
+		return invitoRiunioni;
 	}
 
 }
