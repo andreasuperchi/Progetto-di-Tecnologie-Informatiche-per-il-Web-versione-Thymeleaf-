@@ -68,7 +68,7 @@ public class CheckLogin extends HttpServlet {
 		} else {
 			request.getSession().setAttribute("user", userBean); // salvo nella sessione, nel campo user, il bean appena
 																	// creato
-			String target = "/GoToHome";
+			String target = "/GoToHomePage";
 			path = path + target; // costruisco il path completo
 		}
 

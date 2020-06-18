@@ -48,7 +48,7 @@ public class UtenteDAO {
 	
 	
 	public void addUtente (String username, String password, String mail, String nome, String cognome, String data) throws SQLException{
-		String query = "INSERT INTO utente (username, password, mail, nome, cognome, data) VALUES (?, ?, ?, ?, ?, ?)";
+		String query = "INSERT INTO utente (username, password, mail, nome, cognome, data_nascita) VALUES (?, ?, ?, ?, ?, ?)";
 		
 		try(PreparedStatement pstatement = connection.prepareStatement(query)){
 			pstatement.setString(1, username);
