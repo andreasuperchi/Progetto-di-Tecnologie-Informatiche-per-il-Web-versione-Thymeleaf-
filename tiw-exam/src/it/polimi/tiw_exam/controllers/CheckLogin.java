@@ -36,9 +36,9 @@ public class CheckLogin extends HttpServlet {
 			connection = DriverManager.getConnection(url, user, password);
 
 		} catch (ClassNotFoundException e) {
-			throw new UnavailableException("Error! Unable to load database driver.");
+			throw new UnavailableException("Errore! Caricamento del driver del database fallito.");
 		} catch (SQLException e) {
-			throw new UnavailableException("Error! Couldn't get database connection.");
+			throw new UnavailableException("Errore! Connessione al database fallita.");
 		}
 	}
 
@@ -57,7 +57,7 @@ public class CheckLogin extends HttpServlet {
 		try {
 			userBean = userDAO.checkCredentials(username, password);
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Credential checking error!");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Errore nel controllo credenziali!");
 		}
 
 		String path = getServletContext().getContextPath(); // mi salvo il path di "default"
