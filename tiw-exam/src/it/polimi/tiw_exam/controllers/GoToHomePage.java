@@ -74,10 +74,12 @@ public class GoToHomePage extends HttpServlet {
 		HttpSession session = request.getSession();
 		utente = (Utente) session.getAttribute("utente");
 		UtenteDAO utenteDAO = new UtenteDAO(utente.getId(), connection);
-		List <Riunione> mieRiunioni = null;
+		List <Riunione> riunioniInvitato = null;
+		List <Riunione> riunioniIndette = null;
 		
 		try {
-			mieRiunioni = utenteDAO.trovaMieRiunioni();
+			//riunioniInvitato = utenteDAO.trovaRiunioniACuiSonoStatoInvitato();
+			riunioniIndette = utenteDAO.trovaMieRiunioni();
 		}
 		catch (SQLException e){
 			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Loading Error!");
@@ -87,7 +89,8 @@ public class GoToHomePage extends HttpServlet {
 		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("mieRiunioni", mieRiunioni);
+		ctx.setVariable("riunioniIndette", riunioniIndette);
+		ctx.setVariable("riunioniInvitato", riunioniInvitato);
 		
 
 		templateEngine.process(path, ctx, response.getWriter());

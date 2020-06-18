@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,7 +27,7 @@ public class UtenteDAO {
 	}
 	
 	public Utente checkCredentials(String username, String password) throws SQLException {
-		String query = "SELECT id, username, role FROM utente WHERE username = ? AND password = ?";
+		String query = "SELECT id, username FROM utente WHERE username = ? AND password = ?";
 
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1, username);
@@ -65,14 +66,16 @@ public class UtenteDAO {
 	
 	public void creaRiunione(String titolo, String data, String ora, String durata, int num_max_partecipanti, int host) throws SQLException {
 		
-		String query = "INSERT INTO riunione (id, titolo, data, ora, durata, num_max_partecipanti, host) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		String query = "INSERT INTO riunione (id, titolo, data, ora, durata, ora_fine, num_max_partecipanti, host) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 		
 		try(PreparedStatement pstatement = connection.prepareStatement(query);) {
+			Long ora_fine = Time.parse(ora)+ Time.parse(durata);
 			pstatement.setInt(1, this.id);
 			pstatement.setString(2,  titolo);
 			pstatement.setString(3,  data);
 			pstatement.setString(4,  ora);
 			pstatement.setString(5,  durata);
+			pstatement.setLong(6, ora_fine);
 			pstatement.setInt(6, num_max_partecipanti);
 			pstatement.setInt(7, host);
 			
@@ -83,7 +86,7 @@ public class UtenteDAO {
 	public List<Riunione> trovaMieRiunioni() throws SQLException {
 		
 		List<Riunione> mieRiunioni = new ArrayList<Riunione>();
-		String query = "SELECT * FROM riunione WHERE host = ? AND (? < data OR (? = data AND ? < ora + durata))";
+		String query = "SELECT * FROM riunione WHERE host = ? AND (? < data OR (? = data AND ? < ora_fine))";
 		
 		SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");  
 	    Date date = new Date();

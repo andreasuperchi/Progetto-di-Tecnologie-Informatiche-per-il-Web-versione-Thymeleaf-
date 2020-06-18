@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Home Page</title>
+</head>
+<body>
+<h1>Riunioni a cui sei stato invitato</h1>
+	<table border = "1">
+		<thead>
+			<tr>
+				<th> Id  </th>
+				<th> Titolo </th>
+				<th> Data </th>
+				<th> Ora </th>
+				<th> Durata </th>
+				<th> Host </th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="ri : ${riunioniInvitato}" th:class="(${ri.id} == ${id})? 'current'">
+				<td th:text="${ri.id}"></td>
+				<td th:text = "${ri.titolo}"> </td>
+				<td th:text = "${ri.data}"> </td>
+				<td th:text = "${ri.ora}"> </td>
+				<td th:text = "${ri.durata}"> </td>
+				<td th:text = "${ri.numero_max_partecipanti}"> </td>
+				<td th:text = "${ri.host}"> </td>
+			</tr>
+		</tbody>
+	</table>
+	
+<h1>Riunioni da te indette</h1>
+	<table border = "1">
+		<thead>
+			<tr>
+				<th> Id  </th>
+				<th> Titolo </th>
+				<th> Data </th>
+				<th> Ora </th>
+				<th> Durata </th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="ri : ${riunioniIndette}" th:class="(${rid.id} == ${id})? 'current'">
+				<td th:text="${rid.id}"></td>
+				<td th:text = "${rid.titolo}"> </td>
+				<td th:text = "${rid.data}"> </td>
+				<td th:text = "${rid.ora}"> </td>
+				<td th:text = "${rid.durata}"> </td>
+				<td th:text = "${rid.numero_max_partecipanti}"> </td>
+			</tr>
+		</tbody>
+	</table>
+
+
+</body>
+</html>

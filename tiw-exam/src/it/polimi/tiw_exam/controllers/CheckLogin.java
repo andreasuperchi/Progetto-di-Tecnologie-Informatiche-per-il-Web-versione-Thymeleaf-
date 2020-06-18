@@ -66,7 +66,7 @@ public class CheckLogin extends HttpServlet {
 			path = getServletContext().getContextPath() + "/index.html"; // se la creazione del bean fallisce,
 																			// reindirizzo alla homepage
 		} else {
-			request.getSession().setAttribute("user", userBean); // salvo nella sessione, nel campo user, il bean appena
+			request.getSession().setAttribute("utente", userBean); // salvo nella sessione, nel campo user, il bean appena
 																	// creato
 			String target = "/GoToHomePage";
 			path = path + target; // costruisco il path completo
