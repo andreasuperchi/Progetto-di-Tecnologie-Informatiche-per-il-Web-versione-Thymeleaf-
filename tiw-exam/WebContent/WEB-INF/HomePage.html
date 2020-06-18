@@ -52,7 +52,14 @@
 			</tr>
 		</tbody>
 	</table>
-
-
+	<h1>Crea una nuova riunione</h1>
+	<form th:action="@{/GoToAnagrafica(host = ${session.utente.id})}" method="POST">
+		Titolo: <input type="text" name="titolo" required> <br>
+		Data: <input type="date" name ="data" required> <br> 
+		Ora: <input type="time" name = "ora" required><br>
+		Durata: <input type="time" name= "durata" required><br>
+		Numero Max Partecipanti: <input type="number" name="numero_max_partecipanti" required><br>
+			<input type="submit" value="DatiRiunione">
+	</form>
 </body>
 </html>
