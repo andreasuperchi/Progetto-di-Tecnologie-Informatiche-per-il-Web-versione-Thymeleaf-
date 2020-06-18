@@ -153,5 +153,28 @@ public class UtenteDAO {
 		
 		return invitoRiunioni;
 	}
+	
+	public List<Utente> trovaPersoneDaInvitare() throws SQLException {
+		List<Utente> daInvitare = new ArrayList<Utente>();
+		String query = "SELECT id, nome, cognome FROM utente WHERE id != ?";
+		
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setInt(1, this.id);
+			
+			try(ResultSet result = pstatement.executeQuery();) {
+				while(result.next()) {
+					Utente utente = new Utente();
+					
+					utente.setId(result.getInt("id"));
+					utente.setNome(result.getString("nome"));
+					utente.setCognome(result.getString("cognome"));
+					
+					daInvitare.add(utente);
+				}
+			}
+		}
+		
+		return daInvitare;
+	}
 
 }
