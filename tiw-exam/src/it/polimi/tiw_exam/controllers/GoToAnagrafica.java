@@ -66,7 +66,7 @@ public class GoToAnagrafica extends HttpServlet {
 		String data = request.getParameter("data");
 		String ora = request.getParameter("ora");
 		String durata = request.getParameter("durata");
-		int num_max_partecipanti = (int) request.getAttribute("numero_max_partecipanti");
+		int num_max_partecipanti = Integer.parseInt(request.getParameter("numero_max_partecipanti"));
 		Utente utente = (Utente) request.getSession().getAttribute("utente");
 		int host = utente.getId();
 		
