@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -121,20 +120,19 @@ public class UtenteDAO {
 	public List<Riunione> trovaRiunioniACuiSonoStatoInvitato() throws SQLException {
 		
 		List<Riunione> invitoRiunioni = new ArrayList<Riunione>();
-		String query = "SELECT R.id, R.titolo, R.data, R.ora, R.durata, R.num_max_partecipanti, R.host"
-				+ "FROM partecipanti AS P JOIN riunione AS R ON P.id_riunione = R.id"
-				+ "WHERE P.id_partecipante = ? AND (? < R.data OR (? = R.data AND ? < R.ora + R.durata))";
+		String query = "SELECT R.id, R.titolo, R.data, R.ora, R.durata, R.num_max_partecipanti, R.host FROM partecipanti AS P JOIN riunione AS R ON P.id_riunione = R.id WHERE P.id_partecipante = ? AND (? < R.data OR (? = R.data AND ? < R.ora_fine))";
 		
-		SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");  
-	    Date date = new Date();
-	    SimpleDateFormat formatter2 = new SimpleDateFormat("HH:mm:ss");  
-	    Date time = new Date();
+		Date date = new Date();
+		SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd@HH:mm:ss");
+		String formatted = formatter1.format(date);
+	    
+		String[] date_time = formatted.split("@");
 		
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setInt(1, this.id);
-			pstatement.setString(2, formatter1.format(date));
-			pstatement.setString(3, formatter1.format(date));
-			pstatement.setString(4, formatter2.format(time));
+			pstatement.setString(2, date_time[0]);
+			pstatement.setString(3, date_time[0]);
+			pstatement.setString(4, date_time[1]);
 			
 			try(ResultSet result = pstatement.executeQuery();) {
 				while(result.next()) {

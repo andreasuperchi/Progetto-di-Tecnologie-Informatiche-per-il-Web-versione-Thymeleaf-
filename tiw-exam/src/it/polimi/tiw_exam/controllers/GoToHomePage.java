@@ -68,7 +68,7 @@ public class GoToHomePage extends HttpServlet {
 		List <Riunione> riunioniIndette = null;
 		
 		try {
-			//riunioniInvitato = utenteDAO.trovaRiunioniACuiSonoStatoInvitato();
+			riunioniInvitato = utenteDAO.trovaRiunioniACuiSonoStatoInvitato();
 			riunioniIndette = utenteDAO.trovaMieRiunioni();
 		}
 		catch (SQLException e){
