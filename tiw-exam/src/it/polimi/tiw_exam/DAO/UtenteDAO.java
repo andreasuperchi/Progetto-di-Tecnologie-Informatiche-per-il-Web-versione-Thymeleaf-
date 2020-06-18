@@ -16,6 +16,10 @@ public class UtenteDAO {
 	private int id;
 	private Connection connection;
 	
+	public UtenteDAO(Connection connection) {
+		this.connection = connection;
+	}
+	
 	public UtenteDAO(int id, Connection connection) {
 		this.id = id;
 		this.connection = connection;
@@ -43,7 +47,7 @@ public class UtenteDAO {
 	}
 	
 	
-	public void addUtente ( int id, String username, String password, String mail, String nome, String cognome, String data) throws SQLException{
+	public void addUtente (String username, String password, String mail, String nome, String cognome, String data) throws SQLException{
 		String query = "INSERT INTO utente (username, password, mail, nome, cognome, data) VALUES (?, ?, ?, ?, ?, ?)";
 		
 		try(PreparedStatement pstatement = connection.prepareStatement(query)){

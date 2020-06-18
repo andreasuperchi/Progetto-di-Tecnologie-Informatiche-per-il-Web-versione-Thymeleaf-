@@ -42,7 +42,7 @@ public class RiunioneDAO {
 		return partecipanti;
 	}
 	
-	public void addPartecipèante(int idPartecipante) throws SQLException{
+	public void addPartecipante(int idPartecipante) throws SQLException{
 		String query = "INSERT INTO partecipanti (id_riunione, id_partecipante) VALUES (?,?)";
 		
 		try(PreparedStatement pstatement = connection.prepareStatement(query)){
