@@ -12,13 +12,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import it.polimi.tiw_exam.DAO.UtenteDAO;
 import it.polimi.tiw_exam.beans.Riunione;
+import it.polimi.tiw_exam.beans.Utente;
 
 @WebServlet("/GoToAnagrafica")
 public class GoToAnagrafica extends HttpServlet {
@@ -59,7 +62,22 @@ public class GoToAnagrafica extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Riunione riunione = (Riunione) request.getAttribute("DatiRiunione");
+		String titolo = request.getParameter("titolo");
+		String data = request.getParameter("data");
+		String ora = request.getParameter("ora");
+		String durata = request.getParameter("durata");
+		int num_max_partecipanti = (int) request.getAttribute("numero_max_partecipanti");
+		Utente utente = (Utente) request.getSession().getAttribute("utente");
+		int host = utente.getId();
+		
+		Riunione riunione = new Riunione();
+		riunione.setTitolo(titolo);
+		riunione.setData(data);
+		riunione.setOra(ora);
+		riunione.setDurata(durata);
+		riunione.setNum_max_partecipanti(num_max_partecipanti);
+		riunione.setHost(host);
+		
 		
 		String path = "WEB-INF/Anagrafica.html";
 		
