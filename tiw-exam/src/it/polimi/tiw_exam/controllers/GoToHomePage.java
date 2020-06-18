@@ -72,7 +72,7 @@ public class GoToHomePage extends HttpServlet {
 			riunioniIndette = utenteDAO.trovaMieRiunioni();
 		}
 		catch (SQLException e){
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Loading Error!");
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Errore nel caricamento");
 		}
 		
 		String path = "WEB-INF/HomePage.html";

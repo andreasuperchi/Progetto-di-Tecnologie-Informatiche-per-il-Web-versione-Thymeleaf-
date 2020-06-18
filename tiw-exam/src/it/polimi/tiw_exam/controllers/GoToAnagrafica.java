@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -12,7 +13,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -51,9 +51,9 @@ public class GoToAnagrafica extends HttpServlet {
 			connection = DriverManager.getConnection(url, user, password);
 
 		} catch (ClassNotFoundException e) {
-			throw new UnavailableException("Can't load database driver");
+			throw new UnavailableException("Errore nel caricamento del driver del database.");
 		} catch (SQLException e) {
-			throw new UnavailableException("Couldn't get db connection");
+			throw new UnavailableException("Errore nella connessione al database.");
 		}
 	}
 
@@ -62,13 +62,17 @@ public class GoToAnagrafica extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Utente utente = (Utente) request.getSession().getAttribute("utente");
+		int host = utente.getId();
+		
+		UtenteDAO uDAO = new UtenteDAO(host,connection);
+		List<Utente> daInvitare = null;
+		
 		String titolo = request.getParameter("titolo");
 		String data = request.getParameter("data");
 		String ora = request.getParameter("ora");
 		String durata = request.getParameter("durata");
 		int num_max_partecipanti = Integer.parseInt(request.getParameter("numero_max_partecipanti"));
-		Utente utente = (Utente) request.getSession().getAttribute("utente");
-		int host = utente.getId();
 		
 		Riunione riunione = new Riunione();
 		riunione.setTitolo(titolo);
@@ -78,12 +82,18 @@ public class GoToAnagrafica extends HttpServlet {
 		riunione.setNum_max_partecipanti(num_max_partecipanti);
 		riunione.setHost(host);
 		
+		try {
+			daInvitare = uDAO.trovaPersoneDaInvitare();
+		} catch(SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Errore nel caricamento");
+		}
 		
 		String path = "WEB-INF/Anagrafica.html";
 		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("DatiRiunione", riunione);
+		ctx.setVariable("daInvitare", daInvitare);
 		
 		templateEngine.process(path, ctx, response.getWriter());
 	}

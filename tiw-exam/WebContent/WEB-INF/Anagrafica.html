@@ -1,10 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<title>Benvenuto alla pagina della Riunione</title>
 </head>
 <body>
-
+	<h1>Ecco l'elenco delle persone che puoi invitare alla riunione</h1>
+	<form th:action="@{/CreaRiunione}">
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Nome</th>
+					<th>Cognome</th>
+					<th>Da Invitare</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="u : ${daInvitare}">
+					<td th:text="${u.id}"></td>
+					<td th:text="${u.nome}"></td>
+					<td th:text="${u.cognome}"></td>
+					<td><input type="checkbox" name="invitoConfermato" value="true"></td>
+				</tr>
+			</tbody>
+		</table>
+		<input type="submit" value="Invita">
+	</form>
 </body>
 </html>
