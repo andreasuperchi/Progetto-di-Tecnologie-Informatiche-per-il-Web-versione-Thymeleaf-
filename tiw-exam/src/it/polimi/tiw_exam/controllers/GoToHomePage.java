@@ -30,12 +30,11 @@ public class GoToHomePage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	TemplateEngine templateEngine;
-
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
 	
+	public GoToHomePage() {
+        super();
+    }
+
 	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
@@ -60,15 +59,6 @@ public class GoToHomePage extends HttpServlet {
 		}
 	}
 	
-	
-    public GoToHomePage() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Utente utente = null;
 		HttpSession session = request.getSession();
@@ -96,11 +86,7 @@ public class GoToHomePage extends HttpServlet {
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 
