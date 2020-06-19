@@ -176,5 +176,21 @@ public class UtenteDAO {
 		
 		return daInvitare;
 	}
+	
+	public int trovaIDRiunione() throws SQLException{
+		int id = 0;
+		String query = "SELECT id FROM riunione WHERE id = ? ORDER BY DESC LIMIT 1";
+		
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setInt(1, this.id);
+
+			try(ResultSet result = pstatement.executeQuery();) {
+				while(result.next()) {
+					id = result.getInt("id");
+				}
+			}
+		}
+		return id;
+	}
 
 }
