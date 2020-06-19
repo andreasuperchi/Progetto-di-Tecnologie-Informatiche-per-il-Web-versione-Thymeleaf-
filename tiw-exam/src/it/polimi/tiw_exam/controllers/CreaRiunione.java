@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -71,6 +72,8 @@ public class CreaRiunione extends HttpServlet {
 		Riunione riunione = new Riunione();
 		int idRiunione;
 		
+		UtenteDAO utenteDAO = new UtenteDAO(utente.getId(), connection);
+		
 		String titolo = request.getParameter("titolo");
 		String data = request.getParameter("data");
 		String ora = request.getParameter("ora");
@@ -85,9 +88,16 @@ public class CreaRiunione extends HttpServlet {
 		riunione.setHost(host);
 		
 		ArrayList<Integer> listaInvitati = new ArrayList<>();
+		List<Utente> daInvitare = null;
 		
 		for(String s : request.getParameterValues("id_invitato")) {
 			listaInvitati.add(Integer.parseInt(s));
+		}
+		
+		try {
+			daInvitare = utenteDAO.trovaPersoneDaInvitare();
+		} catch(SQLException e) {
+			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Errore nel caricamento");
 		}
 		
 		if(listaInvitati.size() > num_max_partecipanti) {
@@ -96,12 +106,11 @@ public class CreaRiunione extends HttpServlet {
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 			ctx.setVariable("lista_invitati", listaInvitati);
+			ctx.setVariable("daInvitare", daInvitare);
 			ctx.setVariable("DatiRiunione", riunione);
 			
 			templateEngine.process(path, ctx, response.getWriter());
-		} else {
-			UtenteDAO utenteDAO = new UtenteDAO(utente.getId(), connection);
-			
+		} else {			
 			try {
 				utenteDAO.creaRiunione(titolo, data, ora, durata, num_max_partecipanti, host);
 				idRiunione = utenteDAO.trovaIDRiunione();
