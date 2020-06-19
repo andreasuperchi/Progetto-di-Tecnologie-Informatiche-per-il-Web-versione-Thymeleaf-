@@ -42,7 +42,9 @@ public class RiunioneDAO {
 	public void addPartecipante(int idPartecipante) throws SQLException{
 		String query = "INSERT INTO partecipanti (id_riunione, id_partecipante) VALUES (?,?)";
 		
-		try(PreparedStatement pstatement = connection.prepareStatement(query)){
+		System.out.println(id + " "  + idPartecipante);
+		
+		try(PreparedStatement pstatement = connection.prepareStatement(query);){
 			pstatement.setInt(1, id);
 			pstatement.setInt(2, idPartecipante);
 			

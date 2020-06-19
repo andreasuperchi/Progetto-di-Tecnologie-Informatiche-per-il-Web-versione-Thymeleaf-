@@ -68,6 +68,7 @@ public class GoToAnagrafica extends HttpServlet {
 		ArrayList<Integer> lista_invitati = new ArrayList<>();		
 		UtenteDAO uDAO = new UtenteDAO(host,connection);
 		List<Utente> daInvitare = null;
+		int num_tentativi = 0;
 		
 		String titolo = request.getParameter("titolo");
 		String data = request.getParameter("data");
@@ -96,6 +97,7 @@ public class GoToAnagrafica extends HttpServlet {
 		ctx.setVariable("DatiRiunione", riunione);
 		ctx.setVariable("daInvitare", daInvitare);
 		ctx.setVariable("lista_invitati", lista_invitati);
+		ctx.setVariable("num_tentativi", num_tentativi);
 		
 		templateEngine.process(path, ctx, response.getWriter());
 	}

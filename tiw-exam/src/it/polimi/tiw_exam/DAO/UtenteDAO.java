@@ -197,7 +197,7 @@ public class UtenteDAO {
 	
 	public int trovaIDRiunione() throws SQLException{
 		int id = 0;
-		String query = "SELECT id FROM riunione WHERE id = ? ORDER BY id DESC LIMIT 1";
+		String query = "SELECT id FROM riunione WHERE host = ? ORDER BY id DESC LIMIT 1";
 		
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setInt(1, this.id);

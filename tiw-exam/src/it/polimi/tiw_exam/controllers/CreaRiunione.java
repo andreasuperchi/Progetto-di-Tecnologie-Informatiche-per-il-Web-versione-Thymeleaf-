@@ -25,19 +25,18 @@ import it.polimi.tiw_exam.DAO.UtenteDAO;
 import it.polimi.tiw_exam.beans.Riunione;
 import it.polimi.tiw_exam.beans.Utente;
 
-
 @WebServlet("/CreaRiunione")
 public class CreaRiunione extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
-	private TemplateEngine templateEngine;   
-  
-    public CreaRiunione() {
-        super();
-        
-    }
-    
-    public void init() throws ServletException {
+	private TemplateEngine templateEngine;
+
+	public CreaRiunione() {
+		super();
+
+	}
+
+	public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
 		templateResolver.setTemplateMode(TemplateMode.HTML);
@@ -61,11 +60,10 @@ public class CreaRiunione extends HttpServlet {
 		}
 	}
 
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
-
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Utente utente = (Utente) request.getSession().getAttribute("utente");
@@ -73,6 +71,8 @@ public class CreaRiunione extends HttpServlet {
 		int idRiunione;
 		
 		UtenteDAO utenteDAO = new UtenteDAO(utente.getId(), connection);
+		
+		int num_tentativi = Integer.parseInt(request.getParameter("num_tentativi"));
 		
 		String titolo = request.getParameter("titolo");
 		String data = request.getParameter("data");
@@ -101,15 +101,25 @@ public class CreaRiunione extends HttpServlet {
 		}
 		
 		if(listaInvitati.size() > num_max_partecipanti) {
-			String path = "/WEB-INF/Anagrafica.html";
+			num_tentativi++;
 			
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			ctx.setVariable("lista_invitati", listaInvitati);
-			ctx.setVariable("daInvitare", daInvitare);
-			ctx.setVariable("DatiRiunione", riunione);
-			
-			templateEngine.process(path, ctx, response.getWriter());
+			if(num_tentativi == 3) {
+				String path = "/tiw-exam/Errore.html";
+				
+				response.sendRedirect(path);
+			} else {
+				String path = "/WEB-INF/Anagrafica.html";
+				
+				ServletContext servletContext = getServletContext();
+				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+				ctx.setVariable("lista_invitati", listaInvitati);
+				ctx.setVariable("daInvitare", daInvitare);
+				ctx.setVariable("DatiRiunione", riunione);
+				ctx.setVariable("diff", listaInvitati.size() - num_max_partecipanti);
+				ctx.setVariable("num_tentativi", num_tentativi);
+				
+				templateEngine.process(path, ctx, response.getWriter());
+			}
 		} else {			
 			try {
 				utenteDAO.creaRiunione(titolo, data, ora, durata, num_max_partecipanti, host);
@@ -130,6 +140,8 @@ public class CreaRiunione extends HttpServlet {
 			
 			response.sendRedirect(path);
 		}
+		
 	}
+	
 
 }

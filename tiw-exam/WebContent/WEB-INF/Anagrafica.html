@@ -6,7 +6,8 @@
 </head>
 <body>
 	<h1>Ecco l'elenco delle persone che puoi invitare alla riunione</h1>
-	<form th:action="@{/CreaRiunione(titolo=${DatiRiunione.titolo}, data=${DatiRiunione.data}, ora=${DatiRiunione.ora}, durata=${DatiRiunione.durata}, num_max_p=${DatiRiunione.num_max_partecipanti}, host=${DatiRiunione.host})}" method="post">
+	<div th:if="${not lista_invitati.isEmpty()}"><h2>Errore! Rimuovi almeno <span th:text="${diff}"></span> partecipanti</h2></div>
+	<form th:action="@{/CreaRiunione(titolo=${DatiRiunione.titolo}, data=${DatiRiunione.data}, ora=${DatiRiunione.ora}, durata=${DatiRiunione.durata}, num_max_p=${DatiRiunione.num_max_partecipanti}, host=${DatiRiunione.host}, num_tentativi=${num_tentativi})}" method="post">
 		<table>
 			<thead>
 				<tr>
