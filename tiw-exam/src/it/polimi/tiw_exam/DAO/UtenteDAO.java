@@ -64,15 +64,33 @@ public class UtenteDAO {
 	}
 	
 	public void creaRiunione(String titolo, String data, String ora, String durata, int num_max_partecipanti, int host) throws SQLException {
+		String query = "INSERT INTO riunione (titolo, data, ora, durata, ora_fine, num_max_partecipanti, host) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		
-		String query = "INSERT INTO riunione (id, titolo, data, ora, durata, num_max_partecipanti, host) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		String ora_frammenti[] = ora.split(":");
+		String durata_frammenti[] = durata.split(":");
+		
+		int ora_fine_frammenti[] = new int[3];
+		
+		for(int i = 0; i < ora_frammenti.length; i++) {
+			ora_fine_frammenti[i] = Integer.parseInt(ora_frammenti[i]) + Integer.parseInt(durata_frammenti[i]);
+		}
+		
+		if(ora_fine_frammenti[2] > 59) {
+			ora_fine_frammenti[1]++;
+		}
+		
+		if(ora_fine_frammenti[1] > 59) {
+			ora_fine_frammenti[0]++;
+		}
+		
+		String ora_fine = ora_fine_frammenti[0] + ":" + ora_fine_frammenti[1] + ":" + ora_fine_frammenti[2];
 		
 		try(PreparedStatement pstatement = connection.prepareStatement(query);) {
-			pstatement.setInt(1, this.id);
-			pstatement.setString(2,  titolo);
-			pstatement.setString(3,  data);
-			pstatement.setString(4,  ora);
-			pstatement.setString(5,  durata);
+			pstatement.setString(1,  titolo);
+			pstatement.setString(2,  data);
+			pstatement.setString(3,  ora);
+			pstatement.setString(4,  durata);
+			pstatement.setString(5, ora_fine);
 			pstatement.setInt(6, num_max_partecipanti);
 			pstatement.setInt(7, host);
 			
@@ -179,7 +197,7 @@ public class UtenteDAO {
 	
 	public int trovaIDRiunione() throws SQLException{
 		int id = 0;
-		String query = "SELECT id FROM riunione WHERE id = ? ORDER BY DESC LIMIT 1";
+		String query = "SELECT id FROM riunione WHERE id = ? ORDER BY id DESC LIMIT 1";
 		
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setInt(1, this.id);

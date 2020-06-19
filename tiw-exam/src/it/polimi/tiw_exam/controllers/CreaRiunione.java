@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
@@ -60,32 +62,56 @@ public class CreaRiunione extends HttpServlet {
 
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Riunione riunione = new Riunione();
 		Utente utente = (Utente) request.getSession().getAttribute("utente");
+		Riunione riunione = new Riunione();
 		int idRiunione;
 		
-		riunione = (Riunione) request.getAttribute("DatiRiunione");
+		String titolo = request.getParameter("titolo");
+		String data = request.getParameter("data");
+		String ora = request.getParameter("ora");
+		String durata = request.getParameter("durata");
+		int num_max_partecipanti = Integer.parseInt(request.getParameter("num_max_p"));
+		int host = Integer.parseInt(request.getParameter("host"));
 		
-		UtenteDAO utenteDAO = new UtenteDAO(utente.getId(), connection);
+		ArrayList<Integer> listaInvitati = new ArrayList<>();
 		
-		try {
-			utenteDAO.creaRiunione(riunione.getTitolo(), riunione.getData(), riunione.getOra(), riunione.getDurata(), riunione.getNum_max_partecipanti(), utente.getId());
-			idRiunione = utenteDAO.trovaIDRiunione();
-			RiunioneDAO riunioneDAO = new RiunioneDAO(idRiunione, connection);
+		for(String s : request.getParameterValues("id_invitato")) {
+			listaInvitati.add(Integer.parseInt(s));
 		}
-		catch(SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Errore nella creazione della riunione");
+		
+		if(listaInvitati.size() > num_max_partecipanti) {
+			String path = "/WEB-INF/Anagrafica.html";
+			
+			ServletContext servletContext = getServletContext();
+			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+			ctx.setVariable("lista_invitati", listaInvitati);
+			ctx.setVariable("DatiRiunione", listaInvitati);
+			
+			templateEngine.process(path, ctx, response.getWriter());
+		} else {
+			UtenteDAO utenteDAO = new UtenteDAO(utente.getId(), connection);
+			
+			try {
+				utenteDAO.creaRiunione(titolo, data, ora, durata, num_max_partecipanti, host);
+				idRiunione = utenteDAO.trovaIDRiunione();
+				RiunioneDAO riunioneDAO = new RiunioneDAO(idRiunione, connection);
+			}
+			catch(SQLException e) {
+				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Errore nella creazione della riunione");
+			}
+			
+			String path = getServletContext().getContextPath();
+			String target = "/GoToHomePage";
+			
+			path = path + target;
+			
+			response.sendRedirect(path);
 		}
-		
-		String loginPath = "WEB-INF/HomePage.html";
-		
-		response.sendRedirect(loginPath);
 	}
 
 }

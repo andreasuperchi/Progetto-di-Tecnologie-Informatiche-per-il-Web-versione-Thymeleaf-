@@ -6,7 +6,7 @@
 </head>
 <body>
 	<h1>Ecco l'elenco delle persone che puoi invitare alla riunione</h1>
-	<form th:action="@{/CreaRiunione}">
+	<form th:action="@{/CreaRiunione(titolo=${DatiRiunione.titolo}, data=${DatiRiunione.data}, ora=${DatiRiunione.ora}, durata=${DatiRiunione.durata}, num_max_p=${DatiRiunione.num_max_partecipanti}, host=${DatiRiunione.host})}" method="post">
 		<table>
 			<thead>
 				<tr>
@@ -21,7 +21,7 @@
 					<td th:text="${u.id}"></td>
 					<td th:text="${u.nome}"></td>
 					<td th:text="${u.cognome}"></td>
-					<td><input type="checkbox" name="invitoConfermato" value="true"></td>
+					<td><input type="checkbox" name="id_invitato" th:value="${u.id}" checked></td>
 				</tr>
 			</tbody>
 		</table>
