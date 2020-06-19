@@ -77,6 +77,12 @@ public class CreaRiunione extends HttpServlet {
 		String durata = request.getParameter("durata");
 		int num_max_partecipanti = Integer.parseInt(request.getParameter("num_max_p"));
 		int host = Integer.parseInt(request.getParameter("host"));
+		riunione.setTitolo(titolo);
+		riunione.setData(data);
+		riunione.setOra(ora);
+		riunione.setDurata(durata);
+		riunione.setNum_max_partecipanti(num_max_partecipanti);
+		riunione.setHost(host);
 		
 		ArrayList<Integer> listaInvitati = new ArrayList<>();
 		
@@ -90,7 +96,7 @@ public class CreaRiunione extends HttpServlet {
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 			ctx.setVariable("lista_invitati", listaInvitati);
-			ctx.setVariable("DatiRiunione", listaInvitati);
+			ctx.setVariable("DatiRiunione", riunione);
 			
 			templateEngine.process(path, ctx, response.getWriter());
 		} else {
@@ -100,6 +106,9 @@ public class CreaRiunione extends HttpServlet {
 				utenteDAO.creaRiunione(titolo, data, ora, durata, num_max_partecipanti, host);
 				idRiunione = utenteDAO.trovaIDRiunione();
 				RiunioneDAO riunioneDAO = new RiunioneDAO(idRiunione, connection);
+				for(int i : listaInvitati) {
+					riunioneDAO.addPartecipante(i);
+				}
 			}
 			catch(SQLException e) {
 				response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Errore nella creazione della riunione");

@@ -21,7 +21,7 @@
 					<td th:text="${u.id}"></td>
 					<td th:text="${u.nome}"></td>
 					<td th:text="${u.cognome}"></td>
-					<td><input type="checkbox" name="id_invitato" th:value="${u.id}" checked></td>
+					<td><input type="checkbox" name="id_invitato" th:value="${u.id}" th:checked = "${lista_invitati.containsKey(${u.id})}"></td>
 				</tr>
 			</tbody>
 		</table>

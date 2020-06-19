@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -64,7 +65,7 @@ public class GoToAnagrafica extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Utente utente = (Utente) request.getSession().getAttribute("utente");
 		int host = utente.getId();
-		
+		ArrayList<Integer> lista_invitati = new ArrayList<>();		
 		UtenteDAO uDAO = new UtenteDAO(host,connection);
 		List<Utente> daInvitare = null;
 		
@@ -94,6 +95,7 @@ public class GoToAnagrafica extends HttpServlet {
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("DatiRiunione", riunione);
 		ctx.setVariable("daInvitare", daInvitare);
+		ctx.setVariable("lista_invitati", lista_invitati);
 		
 		templateEngine.process(path, ctx, response.getWriter());
 	}
