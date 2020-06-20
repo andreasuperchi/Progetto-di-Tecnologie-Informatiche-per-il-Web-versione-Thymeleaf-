@@ -103,23 +103,23 @@ public class CreaRiunione extends HttpServlet {
 		if(listaInvitati.size() > num_max_partecipanti) {
 			num_tentativi++;
 			
+			String path;
+			ServletContext servletContext = getServletContext();
+			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+			
 			if(num_tentativi == 3) {
-				String path = "/tiw-exam/Errore.html";
-				
-				response.sendRedirect(path);
+				path = "/WEB-INF/Errore.html";
 			} else {
-				String path = "/WEB-INF/Anagrafica.html";
+				path = "/WEB-INF/Anagrafica.html";
 				
-				ServletContext servletContext = getServletContext();
-				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 				ctx.setVariable("lista_invitati", listaInvitati);
 				ctx.setVariable("daInvitare", daInvitare);
 				ctx.setVariable("DatiRiunione", riunione);
 				ctx.setVariable("diff", listaInvitati.size() - num_max_partecipanti);
 				ctx.setVariable("num_tentativi", num_tentativi);
-				
-				templateEngine.process(path, ctx, response.getWriter());
 			}
+			
+			templateEngine.process(path, ctx, response.getWriter());
 		} else {			
 			try {
 				utenteDAO.creaRiunione(titolo, data, ora, durata, num_max_partecipanti, host);

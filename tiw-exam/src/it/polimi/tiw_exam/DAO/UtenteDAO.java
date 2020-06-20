@@ -76,14 +76,18 @@ public class UtenteDAO {
 		}
 		
 		if(ora_fine_frammenti[2] > 59) {
+			ora_fine_frammenti[2] -= 60;
 			ora_fine_frammenti[1]++;
 		}
 		
 		if(ora_fine_frammenti[1] > 59) {
+			ora_fine_frammenti[1] -= 60;
 			ora_fine_frammenti[0]++;
 		}
 		
 		String ora_fine = ora_fine_frammenti[0] + ":" + ora_fine_frammenti[1] + ":" + ora_fine_frammenti[2];
+		
+		System.out.println(ora_fine);
 		
 		try(PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1,  titolo);
