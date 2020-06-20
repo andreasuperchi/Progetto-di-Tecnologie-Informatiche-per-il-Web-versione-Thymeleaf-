@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,30 +79,48 @@ public class GoToAnagrafica extends HttpServlet {
 		String durata = request.getParameter("durata");
 		int num_max_partecipanti = Integer.parseInt(request.getParameter("numero_max_partecipanti"));
 		
-		Riunione riunione = new Riunione();
-		riunione.setTitolo(titolo);
-		riunione.setData(data);
-		riunione.setOra(ora);
-		riunione.setDurata(durata);
-		riunione.setNum_max_partecipanti(num_max_partecipanti);
-		riunione.setHost(host);
-		
 		try {
-			daInvitare = uDAO.trovaPersoneDaInvitare();
-		} catch(SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Errore nel caricamento");
+			LocalDateTime now = LocalDateTime.now();
+			LocalTime oraRiunione = LocalTime.parse(ora);
+			LocalDate dataRiunione = LocalDate.parse(data);
+			LocalDateTime dataOraRiunione = LocalDateTime.of(dataRiunione, oraRiunione);
+			
+			if(num_max_partecipanti <= 0 || dataOraRiunione.isBefore(now)) {
+				
+				String path =  getServletContext().getContextPath() + "/GoToHomePage";
+				
+				response.sendRedirect(path);
+			} else {
+				Riunione riunione = new Riunione();
+				riunione.setTitolo(titolo);
+				riunione.setData(data);
+				riunione.setOra(ora);
+				riunione.setDurata(durata);
+				riunione.setNum_max_partecipanti(num_max_partecipanti);
+				riunione.setHost(host);
+				
+				try {
+					daInvitare = uDAO.trovaPersoneDaInvitare();
+				} catch(SQLException e) {
+					response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Errore nel caricamento");
+				}
+				
+				String path = "WEB-INF/Anagrafica.html";
+				
+				ServletContext servletContext = getServletContext();
+				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+				ctx.setVariable("DatiRiunione", riunione);
+				ctx.setVariable("daInvitare", daInvitare);
+				ctx.setVariable("lista_invitati", lista_invitati);
+				ctx.setVariable("num_tentativi", num_tentativi);
+				
+				templateEngine.process(path, ctx, response.getWriter());
+			}
+		} catch(Exception e) {
+			String path =  getServletContext().getContextPath() + "/GoToHomePage";
+			
+			response.sendRedirect(path);
 		}
-		
-		String path = "WEB-INF/Anagrafica.html";
-		
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("DatiRiunione", riunione);
-		ctx.setVariable("daInvitare", daInvitare);
-		ctx.setVariable("lista_invitati", lista_invitati);
-		ctx.setVariable("num_tentativi", num_tentativi);
-		
-		templateEngine.process(path, ctx, response.getWriter());
 	}
 
 }

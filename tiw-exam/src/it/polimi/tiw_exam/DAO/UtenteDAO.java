@@ -5,6 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,48 +68,34 @@ public class UtenteDAO {
 	}
 	
 	public void creaRiunione(String titolo, String data, String ora, String durata, int num_max_partecipanti, int host) throws SQLException {
-		String query = "INSERT INTO riunione (titolo, data, data_fine, ora, durata, ora_fine, num_max_partecipanti, host) VALUES (?, ?, ?, ?, ?, ?, ?)";
-		
-		String ora_frammenti[] = ora.split(":");
+		String query = "INSERT INTO riunione (titolo, data, data_fine, ora, durata, ora_fine, num_max_partecipanti, host) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String ora_frammenti[] = ora.split(":"); 
 		String durata_frammenti[] = durata.split(":");
-		String data_frammenti[] = data.split("-");
 		
-		int ora_fine_frammenti[] = new int[3];
-		int data_fine_frammenti[] = new int[3];
+		LocalTime oraRiunione = LocalTime.of(Integer.parseInt(ora_frammenti[0]), Integer.parseInt(ora_frammenti[1]), Integer.parseInt(ora_frammenti[2]));
+		LocalDate dataRiunione = LocalDate.parse(data);
 		
-		for(int i = 0; i < ora_frammenti.length; i++) {
-			ora_fine_frammenti[i] = Integer.parseInt(ora_frammenti[i]) + Integer.parseInt(durata_frammenti[i]);
-		}
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		
-		if(ora_fine_frammenti[2] > 59) {
-			ora_fine_frammenti[2] -= 60;
-			ora_fine_frammenti[1]++;
-		}
+		LocalDateTime dataOraInizio = LocalDateTime.of(dataRiunione, oraRiunione);
+		dataOraInizio.format(formatter);
+		LocalDateTime dataOraFine = dataOraInizio.plusHours(Integer.parseInt(durata_frammenti[0]));
+		dataOraFine = dataOraFine.plusMinutes(Integer.parseInt(durata_frammenti[1]));
+		dataOraFine = dataOraFine.plusSeconds(Integer.parseInt(durata_frammenti[2]));
 		
-		if(ora_fine_frammenti[1] > 59) {
-			ora_fine_frammenti[1] -= 60;
-			ora_fine_frammenti[0]++;
-		}
+		String formattedDataOra = dataOraFine.format(formatter);
 		
-		if(ora_fine_frammenti[0] > 23) {
-			ora_fine_frammenti[0] -= 60;
-			data_fine_frammenti[2]++;
-		}
-		
-		if(data_frammenti[1] == "02") {
-			
-		}
-		
-		String ora_fine = ora_fine_frammenti[0] + ":" + ora_fine_frammenti[1] + ":" + ora_fine_frammenti[2];
-		
+		String dataOraFineFrammenti[] = formattedDataOra.toString().split(" ");
+	
 		try(PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1,  titolo);
 			pstatement.setString(2,  data);
-			pstatement.setString(3,  ora);
-			pstatement.setString(4,  durata);
-			pstatement.setString(5, ora_fine);
-			pstatement.setInt(6, num_max_partecipanti);
-			pstatement.setInt(7, host);
+			pstatement.setString(3, dataOraFineFrammenti[0]);
+			pstatement.setString(4,  ora);
+			pstatement.setString(5,  durata);
+			pstatement.setString(6, dataOraFineFrammenti[1]);
+			pstatement.setInt(7, num_max_partecipanti);
+			pstatement.setInt(8, host);
 			
 			pstatement.executeUpdate();
 		}
@@ -114,7 +104,7 @@ public class UtenteDAO {
 	public List<Riunione> trovaMieRiunioni() throws SQLException {
 		
 		List<Riunione> mieRiunioni = new ArrayList<Riunione>();
-		String query = "SELECT * FROM riunione WHERE host = ? AND (? < data OR (? = data AND ? < ora_fine))";
+		String query = "SELECT * FROM riunione WHERE host = ? AND (? < data_fine OR (? = data_fine AND ? < ora_fine))";
 		
 		Date date = new Date();
 		SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd@HH:mm:ss");
@@ -151,7 +141,7 @@ public class UtenteDAO {
 	public List<Riunione> trovaRiunioniACuiSonoStatoInvitato() throws SQLException {
 		
 		List<Riunione> invitoRiunioni = new ArrayList<Riunione>();
-		String query = "SELECT R.id, R.titolo, R.data, R.ora, R.durata, R.num_max_partecipanti, R.host FROM partecipanti AS P JOIN riunione AS R ON P.id_riunione = R.id WHERE P.id_partecipante = ? AND (? < R.data OR (? = R.data AND ? < R.ora_fine))";
+		String query = "SELECT R.id, R.titolo, R.data, R.ora, R.durata, R.num_max_partecipanti, R.host FROM partecipanti AS P JOIN riunione AS R ON P.id_riunione = R.id WHERE P.id_partecipante = ? AND (? < R.data_fine OR (? = R.data_fine AND ? < R.ora_fine))";
 		
 		Date date = new Date();
 		SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd@HH:mm:ss");
