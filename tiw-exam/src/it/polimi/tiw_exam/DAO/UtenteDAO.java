@@ -64,12 +64,14 @@ public class UtenteDAO {
 	}
 	
 	public void creaRiunione(String titolo, String data, String ora, String durata, int num_max_partecipanti, int host) throws SQLException {
-		String query = "INSERT INTO riunione (titolo, data, ora, durata, ora_fine, num_max_partecipanti, host) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		String query = "INSERT INTO riunione (titolo, data, data_fine, ora, durata, ora_fine, num_max_partecipanti, host) VALUES (?, ?, ?, ?, ?, ?, ?)";
 		
 		String ora_frammenti[] = ora.split(":");
 		String durata_frammenti[] = durata.split(":");
+		String data_frammenti[] = data.split("-");
 		
 		int ora_fine_frammenti[] = new int[3];
+		int data_fine_frammenti[] = new int[3];
 		
 		for(int i = 0; i < ora_frammenti.length; i++) {
 			ora_fine_frammenti[i] = Integer.parseInt(ora_frammenti[i]) + Integer.parseInt(durata_frammenti[i]);
@@ -85,9 +87,16 @@ public class UtenteDAO {
 			ora_fine_frammenti[0]++;
 		}
 		
-		String ora_fine = ora_fine_frammenti[0] + ":" + ora_fine_frammenti[1] + ":" + ora_fine_frammenti[2];
+		if(ora_fine_frammenti[0] > 23) {
+			ora_fine_frammenti[0] -= 60;
+			data_fine_frammenti[2]++;
+		}
 		
-		System.out.println(ora_fine);
+		if(data_frammenti[1] == "02") {
+			
+		}
+		
+		String ora_fine = ora_fine_frammenti[0] + ":" + ora_fine_frammenti[1] + ":" + ora_fine_frammenti[2];
 		
 		try(PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1,  titolo);
