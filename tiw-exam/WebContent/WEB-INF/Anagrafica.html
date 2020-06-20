@@ -5,6 +5,9 @@
 <title>Benvenuto alla pagina della Riunione</title>
 </head>
 <body>
+	<div align="right">
+		<a th:href="@{/Logout}">Logout</a>
+	</div>
 	<h1>Ecco l'elenco delle persone che puoi invitare alla riunione</h1>
 	<div th:if="${not lista_invitati.isEmpty()}"><h2>Errore! Rimuovi almeno <span th:text="${diff}"></span> partecipanti</h2></div>
 	<form th:action="@{/CreaRiunione(titolo=${DatiRiunione.titolo}, data=${DatiRiunione.data}, ora=${DatiRiunione.ora}, durata=${DatiRiunione.durata}, num_max_p=${DatiRiunione.num_max_partecipanti}, host=${DatiRiunione.host}, num_tentativi=${num_tentativi})}" method="post">
