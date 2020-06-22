@@ -72,16 +72,15 @@ public class UtenteDAO {
 		String ora_frammenti[] = ora.split(":"); 
 		String durata_frammenti[] = durata.split(":");
 		
-		LocalTime oraRiunione = LocalTime.of(Integer.parseInt(ora_frammenti[0]), Integer.parseInt(ora_frammenti[1]), Integer.parseInt(ora_frammenti[2]));
+		LocalTime oraRiunione = LocalTime.of(Integer.parseInt(ora_frammenti[0]), Integer.parseInt(ora_frammenti[1]));
 		LocalDate dataRiunione = LocalDate.parse(data);
 		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		
 		LocalDateTime dataOraInizio = LocalDateTime.of(dataRiunione, oraRiunione);
 		dataOraInizio.format(formatter);
 		LocalDateTime dataOraFine = dataOraInizio.plusHours(Integer.parseInt(durata_frammenti[0]));
 		dataOraFine = dataOraFine.plusMinutes(Integer.parseInt(durata_frammenti[1]));
-		dataOraFine = dataOraFine.plusSeconds(Integer.parseInt(durata_frammenti[2]));
 		
 		String formattedDataOra = dataOraFine.format(formatter);
 		
